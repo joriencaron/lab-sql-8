@@ -47,17 +47,50 @@ ON r.rental_id = p.rental_id
 GROUP BY c.name
 ORDER BY gross_revenue DESC;
 
--- 6. Yes, store 1 has 8 copies of Academy Dinosaur
-SELECT s.store_id, f.title, i.inventory_id
+-- 6. Yes, store 1 has 4 copies of Academy Dinosaur
+SELECT i.store_id, f.title, i.inventory_id
 FROM sakila.film f
 JOIN sakila.inventory i USING(film_id)
-JOIN sakila.store s
-WHERE f.title = 'Academy Dinosaur' and s.store_id = 1
+WHERE f.title = 'Academy Dinosaur' and i.store_id = 1;
 
--- 7. 
-SELECT fa., -- voeg filmnaam toe
+-- 7. 10 actors worked on Academy Dinosaur, 4 actors worked on Ace Goldfinger and so on
+SELECT fa.film_id, f.title, a.first_name, a.last_name
 FROM sakila.actor a
 RIGHT JOIN sakila.film_actor fa USING(actor_id)
+JOIN sakila.film f USING(film_id);
+
+-- 7. JAN'S SOLUTIONS
+SELECT first_actor_id, first_actor_first_name;
+
+SELECT f1.film_id, f1.actor_id AS firstactor, a.first_name AS firstactor_firstname, a.last_name AS firstactor_lastname, f2.actor_id AS secondactor 
+from (
+SELECT , f1.actor_id AS secondtactor, a.first_name AS secondactor_firstname, a.last_name AS secondactor_lastname, f2.actor_id AS secondactor
+FROM film_actor f1
+JOIN film_actor f2
+ON (f1.actor_id <> f2.actor_id) AND f1.film_id = f2.film_id
+JOIN actor a1
+ON f1.actor_id = a.actor_id) j1
+JOIN actor a2
+ON j1.secondactor = a2.actor_id;
+
+-- 8. Eleanor Hunt has rented the same movie 46 times
+SELECT c.first_name, c.last_name, COUNT(DISTINCT(r.rental_id))
+FROM sakila.customer c
+JOIN sakila.rental r USING (customer_id)
+GROUP BY c.first_name, c.last_name
+HAVING COUNT(r.rental_id) > 3
+ORDER BY COUNT(DISTINCT(r.rental_id)) DESC;
+
+-- 9. this one is not really working yet
+SELECT f.title, CONCAT(a.first_name,' ',a.last_name), COUNT(fa.film_id)
+FROM film f
+JOIN film_actor fa USING(film_id)
+JOIN actor a USING(actor_id)
+GROUP BY f.title, CONCAT(a.first_name,' ',a.last_name);
+
+
+
+
 
 
 
